@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "Utils.h"
 #include <Windows.h>
 #include <sstream>
@@ -15,6 +15,7 @@ std::wstring GetCurrentDateString()
 	GetLocalTime(&st); // 获取本地时间
 
 	std::wstringstream ss;
+	ss.imbue(std::locale::classic());
 	ss << std::setw(4) << std::setfill(L'0') << st.wYear
 	   << std::setw(2) << std::setfill(L'0') << st.wMonth
 	   << std::setw(2) << std::setfill(L'0') << st.wDay;

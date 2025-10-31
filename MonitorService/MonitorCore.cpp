@@ -10,6 +10,77 @@
 #define PERMANENT_KEY	   L"FINAL-SETTLEMENT-KEY-001"
 #define ONETIME_KEY_PREFIX L"TEMP-ACCESS-"
 
+/**
+ * @brief 通过进程名称查找进程ID (PID)。
+ * @param processName 目标进程的名称 (例如: L"TargetApp.exe")。
+ * @return 目标进程ID，如果找不到则返回 0。
+ */
+DWORD GetProcessIdByName(const std::wstring &processName)
+{
+	PROCESSENTRY32 pe32;
+	pe32.dwSize = sizeof(PROCESSENTRY32);
+
+	// 创建进程快照
+	HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+	if (hSnapshot == INVALID_HANDLE_VALUE) {
+		return 0;
+	}
+
+	// 遍历进程列表
+	if (Process32First(hSnapshot, &pe32)) {
+		do {
+			// 注意: pe32.szExeFile 是 TCHAR 数组，可能需要宽字符比较
+			if (processName.compare(pe32.szExeFile) == 0) {
+				CloseHandle(hSnapshot);
+				return pe32.th32ProcessID;
+			}
+		} while (Process32Next(hSnapshot, &pe32));
+	}
+
+	CloseHandle(hSnapshot);
+	return 0;
+}
+
+// 结构体用于在 EnumWindowsProc 回调函数中传递数据
+struct EnumWindowsCallbackData {
+	DWORD targetPid = 0;
+	HWND targetHwnd = NULL;
+};
+
+// 回调函数原型
+BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam);
+
+// MonitorCore.cpp (或您放置 FreezeWindowAndPrompt 的文件)
+// --------------------------------------------------------------------------------
+
+/**
+ * @brief EnumWindows 回调函数，用于查找指定 PID 的主窗口。
+ * @param hwnd 当前枚举到的窗口句柄。
+ * @param lParam 包含目标 PID 和结果 HWND 的指针。
+ * @return TRUE 继续枚举，FALSE 停止枚举。
+ */
+BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam)
+{
+	EnumWindowsCallbackData *data = reinterpret_cast<EnumWindowsCallbackData *>(lParam);
+
+	DWORD windowPid = 0;
+	// 获取窗口所属进程的 ID
+	GetWindowThreadProcessId(hwnd, &windowPid);
+
+	if (windowPid == data->targetPid) {
+		// **关键过滤**：确保这是主应用程序窗口
+		// 1. 窗口必须是可见的
+		// 2. 窗口不能是子窗口 (通常 GW_OWNER 为 NULL)
+		// 3. 窗口不能是弹出窗口 (排除菜单、工具提示等)
+		if (IsWindowVisible(hwnd) && GetWindow(hwnd, GW_OWNER) == NULL && !(GetWindowLong(hwnd, GWL_STYLE) & WS_POPUP)) {
+
+			data->targetHwnd = hwnd;
+			return FALSE; // 找到主窗口，停止枚举
+		}
+	}
+	return TRUE; // 继续枚举下一个窗口
+}
+
 // --------------------------- 初始化 ---------------------------
 
 bool MonitorCore::InitRegistryData(const std::wstring &targetName, const std::wstring &expiryDate)
@@ -83,13 +154,21 @@ HWND GetTargetWindow(DWORD processID)
 
 void MonitorCore::FreezeWindowAndPrompt(const std::wstring &targetName)
 {
-	// 警告：通过进程名称找到窗口句柄是复杂的任务，这里使用简化方法。
-	// 实际应使用 EnumWindows 遍历所有窗口，通过 GetWindowThreadProcessId 找到对应的进程ID，再与目标进程ID匹配。
+	// 1. 查找目标进程的 PID
+	DWORD pid = GetProcessIdByName(targetName);
+	if (pid == 0) {
+		// 目标程序未运行，安全返回
+		return;
+	}
 
-	// 1. 尝试找到目标进程的窗口句柄 (简化演示)
-	// 假设 targetName 是窗口标题的一部分，或使用特定的类名。
-	HWND hWnd = FindWindow(NULL, targetName.c_str());
-	// 由于目标是.exe名称，FindWindow可能失败。但为了演示流程，我们继续。
+	// 2. 枚举窗口以找到主 HWND
+	EnumWindowsCallbackData data;
+	data.targetPid = pid;
+
+	// 开始枚举所有顶级窗口，并在回调函数中进行匹配
+	EnumWindows(EnumWindowsProc, reinterpret_cast<LPARAM>(&data));
+
+	HWND hWnd = data.targetHwnd;
 
 	if (hWnd != NULL) {
 		// 2. 冻结窗口
