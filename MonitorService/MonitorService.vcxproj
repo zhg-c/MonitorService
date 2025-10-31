@@ -20,12 +20,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MonitorCore.cpp" />
-    <ClCompile Include="RegistryManager.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="MonitorCore.h" />
-    <ClInclude Include="RegistryManager.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

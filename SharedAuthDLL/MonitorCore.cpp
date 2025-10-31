@@ -1,4 +1,5 @@
-﻿#include "MonitorCore.h"
+﻿#include "pch.h"
+#include "MonitorCore.h"
 #include "RegistryManager.h"
 #include "Utils.h"
 #include "HardwareID.h"

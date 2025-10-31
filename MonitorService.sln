@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KeyGenTool", "KeyGenTool\Ke
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SharedAuthDLL", "SharedAuthDLL\SharedAuthDLL.vcxproj", "{FEAD13DE-5D62-46F5-AC49-FC9F46A68BBA}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ActivationHelper", "ActivationHelper\ActivationHelper.vcxproj", "{3EC9BACB-4D93-481C-AD77-6DC18A69FD32}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -41,6 +43,14 @@ Global
 		{FEAD13DE-5D62-46F5-AC49-FC9F46A68BBA}.Release|x64.Build.0 = Release|x64
 		{FEAD13DE-5D62-46F5-AC49-FC9F46A68BBA}.Release|x86.ActiveCfg = Release|Win32
 		{FEAD13DE-5D62-46F5-AC49-FC9F46A68BBA}.Release|x86.Build.0 = Release|Win32
+		{3EC9BACB-4D93-481C-AD77-6DC18A69FD32}.Debug|x64.ActiveCfg = Debug|x64
+		{3EC9BACB-4D93-481C-AD77-6DC18A69FD32}.Debug|x64.Build.0 = Debug|x64
+		{3EC9BACB-4D93-481C-AD77-6DC18A69FD32}.Debug|x86.ActiveCfg = Debug|Win32
+		{3EC9BACB-4D93-481C-AD77-6DC18A69FD32}.Debug|x86.Build.0 = Debug|Win32
+		{3EC9BACB-4D93-481C-AD77-6DC18A69FD32}.Release|x64.ActiveCfg = Release|x64
+		{3EC9BACB-4D93-481C-AD77-6DC18A69FD32}.Release|x64.Build.0 = Release|x64
+		{3EC9BACB-4D93-481C-AD77-6DC18A69FD32}.Release|x86.ActiveCfg = Release|Win32
+		{3EC9BACB-4D93-481C-AD77-6DC18A69FD32}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
