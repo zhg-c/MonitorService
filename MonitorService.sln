@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SharedAuthDLL", "SharedAuth
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ActivationHelper", "ActivationHelper\ActivationHelper.vcxproj", "{3EC9BACB-4D93-481C-AD77-6DC18A69FD32}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MonitorConfig", "MonitorConfig\MonitorConfig.vcxproj", "{CD86E17C-404A-4844-AB7F-77727DCB3509}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -51,6 +53,14 @@ Global
 		{3EC9BACB-4D93-481C-AD77-6DC18A69FD32}.Release|x64.Build.0 = Release|x64
 		{3EC9BACB-4D93-481C-AD77-6DC18A69FD32}.Release|x86.ActiveCfg = Release|Win32
 		{3EC9BACB-4D93-481C-AD77-6DC18A69FD32}.Release|x86.Build.0 = Release|Win32
+		{CD86E17C-404A-4844-AB7F-77727DCB3509}.Debug|x64.ActiveCfg = Debug|x64
+		{CD86E17C-404A-4844-AB7F-77727DCB3509}.Debug|x64.Build.0 = Debug|x64
+		{CD86E17C-404A-4844-AB7F-77727DCB3509}.Debug|x86.ActiveCfg = Debug|Win32
+		{CD86E17C-404A-4844-AB7F-77727DCB3509}.Debug|x86.Build.0 = Debug|Win32
+		{CD86E17C-404A-4844-AB7F-77727DCB3509}.Release|x64.ActiveCfg = Release|x64
+		{CD86E17C-404A-4844-AB7F-77727DCB3509}.Release|x64.Build.0 = Release|x64
+		{CD86E17C-404A-4844-AB7F-77727DCB3509}.Release|x86.ActiveCfg = Release|Win32
+		{CD86E17C-404A-4844-AB7F-77727DCB3509}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

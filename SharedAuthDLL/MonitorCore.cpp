@@ -237,7 +237,7 @@ void MonitorCore::RunMonitorLoop()
 	std::wcout << L"--------------------------------------" << std::endl;
 
 	// 实际服务会持续运行，这里使用一个简单的循环演示
-	while (true) {
+	while (!m_stopFlag) {
 		// 1. 检查日期和状态
 		bool shouldBeFrozen = CheckDatesAndState(targetName);
 
@@ -298,4 +298,9 @@ bool MonitorCore::ValidateKey(const std::wstring &key, const std::wstring &local
 	}
 
 	return true;
+}
+
+void MonitorCore::StopMonitoring()
+{
+	m_stopFlag = true; // 设置标志，循环将在下一次迭代时退出
 }

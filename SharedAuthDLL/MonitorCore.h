@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "SharedAuthDLL.h"
 #include <string>
+#include <atomic>
 
 enum KeyStatus {
 	Trial = 0,
@@ -19,6 +20,8 @@ public:
 	// 验证密钥（现在需要本地 HWID）
 	bool ValidateKey(const std::wstring &key, const std::wstring &localHwid);
 
+	void StopMonitoring(); // <-- 新增，用于设置退出标志
+
 private:
 	// 检查日期是否被篡改或已到期
 	bool CheckDatesAndState(std::wstring &targetName);
@@ -28,4 +31,7 @@ private:
 
 	// 冻结目标窗口并给出提示
 	void FreezeWindowAndPrompt(const std::wstring &targetName);
+
+private:
+	std::atomic<bool> m_stopFlag { false }; // <-- 新增退出标志
 };

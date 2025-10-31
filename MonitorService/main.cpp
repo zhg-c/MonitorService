@@ -6,6 +6,16 @@
 #include <windows.h>
 #include <locale>
 #include <limits> // 确保引入 std::numeric_limits
+#include <tchar.h> // 用于 _T() 宏
+
+// 定义服务的名称
+#define SERVICE_NAME _T("MonitorSvc")
+// 全局服务状态句柄
+SERVICE_STATUS_HANDLE g_ServiceStatusHandle = NULL;
+SERVICE_STATUS g_ServiceStatus;
+
+// 核心监控类的全局实例 (方便在服务函数中调用)
+MonitorCore g_MonitorCore;
 
 void ShowHelp()
 {
@@ -48,43 +58,94 @@ void ActivateKey(MonitorCore &core)
 	core.ValidateKey(key, localHwid);
 }
 
-int wmain()
+/**
+ * @brief 处理来自服务控制管理器的命令（例如停止服务）。
+ * @param dwControl SCM 命令代码。
+ */
+VOID WINAPI ServiceCtrlHandler(DWORD dwControl)
 {
-	// 设置本地化以支持中文输入和输出
-	std::locale::global(std::locale(""));
+	switch (dwControl) {
+	case SERVICE_CONTROL_STOP:
+		// 收到停止命令
+		g_ServiceStatus.dwCurrentState = SERVICE_STOP_PENDING;
+		SetServiceStatus(g_ServiceStatusHandle, &g_ServiceStatus);
 
-	MonitorCore core;
-	int choice = 0;
+		// **停止核心逻辑：** // 如果 MonitorCore::StartMonitoringLoop 是无限循环，您需要在 DLL 中添加一个退出机制。
+		// 假设您在 MonitorCore 中添加了 StopMonitoring 方法。
+		// g_MonitorCore.StopMonitoring();
 
-	while (choice != 4) {
-		ShowHelp();
-		std::wcout << L"请选择操作: ";
-		if (!(std::wcin >> choice)) {
-			std::wcin.clear();
-			std::wcin.ignore(std::numeric_limits<std::streamsize>::max(), L'\n');
-			choice = 0;
-			continue;
-		}
+		// 结束服务
+		g_ServiceStatus.dwCurrentState = SERVICE_STOPPED;
+		break;
 
-		switch (choice) {
-		case 1:
-			ConfigureAndStart(core);
-			break;
-		case 2:
-			ActivateKey(core);
-			break;
-		case 3:
-			std::wcout << L"服务核心开始运行 (按 Ctrl+C 停止)..." << std::endl;
-			core.RunMonitorLoop();
-			break;
-		case 4:
-			std::wcout << L"退出程序。" << std::endl;
-			break;
-		default:
-			std::wcout << L"无效的选择，请重试。" << std::endl;
-			break;
-		}
+	case SERVICE_CONTROL_INTERROGATE:
+		// 收到状态查询，直接报告当前状态
+		break;
+
+	default:
+		break;
 	}
 
+	// 更新服务状态
+	SetServiceStatus(g_ServiceStatusHandle, &g_ServiceStatus);
+}
+
+/**
+ * @brief 服务的实际入口点，由 SCM 调用。
+ * @param dwArgc 参数数量。
+ * @param lpszArgv 参数列表。
+ */
+VOID WINAPI ServiceMain(DWORD dwArgc, LPTSTR *lpszArgv)
+{
+	// 1. 注册服务控制处理函数
+	g_ServiceStatusHandle = RegisterServiceCtrlHandler(
+		SERVICE_NAME,
+		ServiceCtrlHandler);
+
+	if (g_ServiceStatusHandle == NULL) {
+		// 注册失败，记录错误并退出
+		return;
+	}
+
+	// 2. 初始化服务状态结构
+	g_ServiceStatus.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
+	g_ServiceStatus.dwCurrentState = SERVICE_START_PENDING; // 正在启动
+	g_ServiceStatus.dwControlsAccepted = SERVICE_ACCEPT_STOP; // 接受停止命令
+	g_ServiceStatus.dwWin32ExitCode = NO_ERROR;
+	g_ServiceStatus.dwServiceSpecificExitCode = 0;
+	g_ServiceStatus.dwCheckPoint = 0;
+	g_ServiceStatus.dwWaitHint = 3000; // 等待 3 秒
+
+	// 3. 报告正在启动
+	SetServiceStatus(g_ServiceStatusHandle, &g_ServiceStatus);
+
+	// 4. 服务正式运行
+	g_ServiceStatus.dwCurrentState = SERVICE_RUNNING;
+	g_ServiceStatus.dwCheckPoint = 0;
+	SetServiceStatus(g_ServiceStatusHandle, &g_ServiceStatus);
+
+	// 5. **调用您的核心监控逻辑**
+	// 实际应用中，您应该从注册表读取目标进程名。
+	g_MonitorCore.RunMonitorLoop();
+
+	// 当 StartMonitoringLoop 退出（例如收到停止命令），服务结束
+	g_ServiceStatus.dwCurrentState = SERVICE_STOPPED;
+	SetServiceStatus(g_ServiceStatusHandle, &g_ServiceStatus);
+}
+
+// 服务的入口点数组
+SERVICE_TABLE_ENTRY ServiceTable[] = {
+	{ const_cast<LPTSTR>(SERVICE_NAME), (LPSERVICE_MAIN_FUNCTION)ServiceMain },
+	{ NULL, NULL }
+};
+
+int _tmain(int argc, TCHAR *argv[])
+{
+	// 将控制权交给服务控制调度程序
+	if (StartServiceCtrlDispatcher(ServiceTable) == FALSE) {
+		// 调度失败，可能是程序被当作普通应用运行，而不是服务
+		// 此时您可以在这里添加日志或错误处理
+		return GetLastError();
+	}
 	return 0;
 }
