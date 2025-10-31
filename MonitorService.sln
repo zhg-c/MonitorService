@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.36422.26
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MonitorService", "MonitorService\MonitorService.vcxproj", "{73017F00-4C2B-402E-817F-D5C4FF45B321}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KeyGenTool", "KeyGenTool\KeyGenTool.vcxproj", "{3C734A52-E7DD-48E8-8F56-21FDDF01A912}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SharedAuthDLL", "SharedAuthDLL\SharedAuthDLL.vcxproj", "{FEAD13DE-5D62-46F5-AC49-FC9F46A68BBA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +25,22 @@ Global
 		{73017F00-4C2B-402E-817F-D5C4FF45B321}.Release|x64.Build.0 = Release|x64
 		{73017F00-4C2B-402E-817F-D5C4FF45B321}.Release|x86.ActiveCfg = Release|Win32
 		{73017F00-4C2B-402E-817F-D5C4FF45B321}.Release|x86.Build.0 = Release|Win32
+		{3C734A52-E7DD-48E8-8F56-21FDDF01A912}.Debug|x64.ActiveCfg = Debug|x64
+		{3C734A52-E7DD-48E8-8F56-21FDDF01A912}.Debug|x64.Build.0 = Debug|x64
+		{3C734A52-E7DD-48E8-8F56-21FDDF01A912}.Debug|x86.ActiveCfg = Debug|Win32
+		{3C734A52-E7DD-48E8-8F56-21FDDF01A912}.Debug|x86.Build.0 = Debug|Win32
+		{3C734A52-E7DD-48E8-8F56-21FDDF01A912}.Release|x64.ActiveCfg = Release|x64
+		{3C734A52-E7DD-48E8-8F56-21FDDF01A912}.Release|x64.Build.0 = Release|x64
+		{3C734A52-E7DD-48E8-8F56-21FDDF01A912}.Release|x86.ActiveCfg = Release|Win32
+		{3C734A52-E7DD-48E8-8F56-21FDDF01A912}.Release|x86.Build.0 = Release|Win32
+		{FEAD13DE-5D62-46F5-AC49-FC9F46A68BBA}.Debug|x64.ActiveCfg = Debug|x64
+		{FEAD13DE-5D62-46F5-AC49-FC9F46A68BBA}.Debug|x64.Build.0 = Debug|x64
+		{FEAD13DE-5D62-46F5-AC49-FC9F46A68BBA}.Debug|x86.ActiveCfg = Debug|Win32
+		{FEAD13DE-5D62-46F5-AC49-FC9F46A68BBA}.Debug|x86.Build.0 = Debug|Win32
+		{FEAD13DE-5D62-46F5-AC49-FC9F46A68BBA}.Release|x64.ActiveCfg = Release|x64
+		{FEAD13DE-5D62-46F5-AC49-FC9F46A68BBA}.Release|x64.Build.0 = Release|x64
+		{FEAD13DE-5D62-46F5-AC49-FC9F46A68BBA}.Release|x86.ActiveCfg = Release|Win32
+		{FEAD13DE-5D62-46F5-AC49-FC9F46A68BBA}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

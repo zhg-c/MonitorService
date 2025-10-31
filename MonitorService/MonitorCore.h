@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <string>
 
 enum KeyStatus {
@@ -9,22 +9,22 @@ enum KeyStatus {
 
 class MonitorCore {
 public:
-	// ³õÊ¼»¯×¢²á±íÊı¾İ (ÔÚ¿ØÖÆÌ¨ÅäÖÃÊ±µ÷ÓÃ)
+	// åˆå§‹åŒ–æ³¨å†Œè¡¨æ•°æ® (åœ¨æ§åˆ¶å°é…ç½®æ—¶è°ƒç”¨)
 	bool InitRegistryData(const std::wstring& targetName, const std::wstring& expiryDate);
 
-	// ÔËĞĞÖ÷¼à¿ØÑ­»·
+	// è¿è¡Œä¸»ç›‘æ§å¾ªç¯
 	void RunMonitorLoop();
 
-	// ÑéÖ¤ÃÜÔ¿£¨ÏÖÔÚĞèÒª±¾µØ HWID£©
+	// éªŒè¯å¯†é’¥ï¼ˆç°åœ¨éœ€è¦æœ¬åœ° HWIDï¼‰
 	bool ValidateKey(const std::wstring& key, const std::wstring& localHwid);
 private:
-	// ¼ì²éÈÕÆÚÊÇ·ñ±»´Û¸Ä»òÒÑµ½ÆÚ
+	// æ£€æŸ¥æ—¥æœŸæ˜¯å¦è¢«ç¯¡æ”¹æˆ–å·²åˆ°æœŸ
 	bool CheckDatesAndState(std::wstring& targetName);
 
-	// ¼ì²éÄ¿±ê½ø³ÌÊÇ·ñÔÚÔËĞĞ£¬²¢¸ù¾İ×´Ì¬½øĞĞ´¦Àí
+	// æ£€æŸ¥ç›®æ ‡è¿›ç¨‹æ˜¯å¦åœ¨è¿è¡Œï¼Œå¹¶æ ¹æ®çŠ¶æ€è¿›è¡Œå¤„ç†
 	void ProcessMonitor(const std::wstring& targetName, bool shouldBeFrozen);
 
-	// ¶³½áÄ¿±ê´°¿Ú²¢¸ø³öÌáÊ¾
+	// å†»ç»“ç›®æ ‡çª—å£å¹¶ç»™å‡ºæç¤º
 	void FreezeWindowAndPrompt(const std::wstring& targetName);
 
 };

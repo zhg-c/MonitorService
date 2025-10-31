@@ -1,9 +1,9 @@
-#include "RegistryManager.h"
+ï»¿#include "RegistryManager.h"
 #include <iostream>
 
 namespace RegistryManager {
 
-	// Í¨ÓÃĞ´Èëº¯Êı
+	// é€šç”¨å†™å…¥å‡½æ•°
 	static bool WriteValue(const wchar_t* valueName, DWORD type, const BYTE* data, DWORD size) {
 		HKEY hKey;
 		LONG result = RegCreateKeyEx(
@@ -26,18 +26,18 @@ namespace RegistryManager {
 		return result == ERROR_SUCCESS;
 	}
 
-	// Ğ´Èë×Ö·û´®Öµ
+	// å†™å…¥å­—ç¬¦ä¸²å€¼
 	bool WriteString(const wchar_t* valueName, const std::wstring& data) {
 		DWORD size = (data.length() + 1) * sizeof(wchar_t);
 		return WriteValue(valueName, REG_SZ, (const BYTE*)data.c_str(), size);
 	}
 
-	// Ğ´Èë DWORD
+	// å†™å…¥ DWORD
 	bool WriteDword(const wchar_t* valueName, DWORD data) {
 		return WriteValue(valueName, REG_DWORD, (const BYTE*)&data, sizeof(DWORD));
 	}
 
-	// ¶ÁÈ¡×Ö·û´®Öµ
+	// è¯»å–å­—ç¬¦ä¸²å€¼
 	bool ReadString(const wchar_t* valueName, std::wstring& data) {
 		HKEY hKey;
 		LONG result = RegOpenKeyEx(HKEY_CURRENT_USER, REG_KEY_PATH, 0, KEY_READ, &hKey);
@@ -46,14 +46,14 @@ namespace RegistryManager {
 		DWORD bufferSize = 0;
 		DWORD type = 0;
 
-		// µÚÒ»´Îµ÷ÓÃ£º»ñÈ¡ËùĞè´óĞ¡
+		// ç¬¬ä¸€æ¬¡è°ƒç”¨ï¼šè·å–æ‰€éœ€å¤§å°
 		result = RegQueryValueEx(hKey, valueName, NULL, &type, NULL, &bufferSize);
 		if (result != ERROR_SUCCESS || type != REG_SZ) {
 			RegCloseKey(hKey);
 			return false;
 		}
 
-		// ·ÖÅä»º³åÇø²¢½øĞĞµÚ¶ş´Îµ÷ÓÃ
+		// åˆ†é…ç¼“å†²åŒºå¹¶è¿›è¡Œç¬¬äºŒæ¬¡è°ƒç”¨
 		data.resize(bufferSize / sizeof(wchar_t));
 		result = RegQueryValueEx(hKey, valueName, NULL, &type, (LPBYTE)&data[0], &bufferSize);
 
@@ -72,7 +72,7 @@ namespace RegistryManager {
 		}
 	}
 
-	// ¶ÁÈ¡ DWORD
+	// è¯»å– DWORD
 	bool ReadDword(const wchar_t* valueName, DWORD& data) {
 		HKEY hKey;
 		LONG result = RegOpenKeyEx(HKEY_CURRENT_USER, REG_KEY_PATH, 0, KEY_READ, &hKey);

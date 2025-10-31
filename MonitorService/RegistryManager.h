@@ -1,20 +1,20 @@
-#pragma once
+ï»¿#pragma once
 #include <windows.h>
 #include <string>
 
-// ×¢²á±íÂ·¾¶£¬Êµ¼ÊÊ¹ÓÃÊ±Çë¸ü¸ÄÒÔÔöÇ¿Òş±ÎĞÔ
+// æ³¨å†Œè¡¨è·¯å¾„ï¼Œå®é™…ä½¿ç”¨æ—¶è¯·æ›´æ”¹ä»¥å¢å¼ºéšè”½æ€§
 #define REG_KEY_PATH L"SOFTWARE\\MyCompany\\MonitorService"
 
 namespace RegistryManager {
-	// Ğ´Èë×Ö·û´®Öµ
+	// å†™å…¥å­—ç¬¦ä¸²å€¼
 	bool WriteString(const wchar_t* valueName, const std::wstring& data);
 
-	// ¶ÁÈ¡×Ö·û´®Öµ
+	// è¯»å–å­—ç¬¦ä¸²å€¼
 	bool ReadString(const wchar_t* valueName, std::wstring& data);
 
-	// Ğ´Èë DWORD (32Î»ÕûÊı£¬ÓÃÓÚ×´Ì¬)
+	// å†™å…¥ DWORD (32ä½æ•´æ•°ï¼Œç”¨äºçŠ¶æ€)
 	bool WriteDword(const wchar_t* valueName, DWORD data);
 
-	// ¶ÁÈ¡ DWORD
+	// è¯»å– DWORD
 	bool ReadDword(const wchar_t* valueName, DWORD& data);
 }

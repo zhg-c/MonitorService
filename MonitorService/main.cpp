@@ -7,7 +7,8 @@
 #include <locale>
 #include <limits> // 确保引入 std::numeric_limits
 
-void ShowHelp() {
+void ShowHelp()
+{
 	std::wcout << L"\n--- 软件监控服务控制台 ---" << std::endl;
 	std::wcout << L"1. 配置并启动监控" << std::endl;
 	std::wcout << L"2. 激活密钥" << std::endl;
@@ -16,7 +17,8 @@ void ShowHelp() {
 	std::wcout << L"--------------------------------" << std::endl;
 }
 
-void ConfigureAndStart(MonitorCore& core) {
+void ConfigureAndStart(MonitorCore &core)
+{
 	std::wstring targetName, expiryDate;
 
 	std::wcout << L"请输入要监控的软件名称 (例如: MyApp.exe): ";
@@ -26,15 +28,15 @@ void ConfigureAndStart(MonitorCore& core) {
 	std::wcin >> expiryDate;
 
 	if (core.InitRegistryData(targetName, expiryDate)) {
-		std::wcout << L"✅ 配置成功！数据已写入注册表。" << std::endl;
+		std::wcout << L"  配置成功！数据已写入注册表。" << std::endl;
 		std::wcout << L"请选择选项 3 运行监控核心。" << std::endl;
-	}
-	else {
-		std::wcout << L"❌ 配置失败，请检查权限。" << std::endl;
+	} else {
+		std::wcout << L"  配置失败，请检查权限。" << std::endl;
 	}
 }
 
-void ActivateKey(MonitorCore& core) {
+void ActivateKey(MonitorCore &core)
+{
 	std::wstring key;
 	std::wcout << L"请输入您收到的密钥: ";
 	std::wcin >> key;
@@ -46,7 +48,8 @@ void ActivateKey(MonitorCore& core) {
 	core.ValidateKey(key, localHwid);
 }
 
-int wmain() {
+int wmain()
+{
 	// 设置本地化以支持中文输入和输出
 	std::locale::global(std::locale(""));
 

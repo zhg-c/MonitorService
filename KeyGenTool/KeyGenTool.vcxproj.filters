@@ -15,22 +15,8 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="KeyGenTool.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="MonitorCore.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="RegistryManager.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="MonitorCore.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="RegistryManager.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>
