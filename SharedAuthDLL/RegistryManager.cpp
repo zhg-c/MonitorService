@@ -9,7 +9,7 @@ static bool WriteValue(const wchar_t *valueName, DWORD type, const BYTE *data, D
 {
 	HKEY hKey;
 	LONG result = RegCreateKeyEx(
-		HKEY_CURRENT_USER, REG_KEY_PATH, 0, NULL,
+		HKEY_LOCAL_MACHINE, REG_KEY_PATH, 0, NULL,
 		REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL);
 
 	if (result != ERROR_SUCCESS) {
@@ -44,7 +44,7 @@ bool WriteDword(const wchar_t *valueName, DWORD data)
 bool ReadString(const wchar_t *valueName, std::wstring &data)
 {
 	HKEY hKey;
-	LONG result = RegOpenKeyEx(HKEY_CURRENT_USER, REG_KEY_PATH, 0, KEY_READ, &hKey);
+	LONG result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, REG_KEY_PATH, 0, KEY_READ, &hKey);
 	if (result != ERROR_SUCCESS)
 		return false;
 
@@ -80,7 +80,7 @@ bool ReadString(const wchar_t *valueName, std::wstring &data)
 bool ReadDword(const wchar_t *valueName, DWORD &data)
 {
 	HKEY hKey;
-	LONG result = RegOpenKeyEx(HKEY_CURRENT_USER, REG_KEY_PATH, 0, KEY_READ, &hKey);
+	LONG result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, REG_KEY_PATH, 0, KEY_READ, &hKey);
 	if (result != ERROR_SUCCESS)
 		return false;
 

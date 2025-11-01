@@ -6,7 +6,7 @@
 
 ### 核心功能
 
-- **注册表存储：** 在 Windows 注册表 (`HKEY_CURRENT_USER\SOFTWARE\MyCompany\MonitorService`) 中安全存储配置信息和授权状态。
+- **注册表存储：** 在 Windows 注册表 (`HKEY_LOCAL_MACHINE\SOFTWARE\MyCompany\MonitorService`) 中安全存储配置信息和授权状态。
 - **日期防篡改：** 实时监控系统日期，防止用户通过将时间回拨来延长试用期。
 - **进程监控与冻结：** 持续检测目标软件是否运行。一旦到期或检测到篡改，立即冻结目标窗口并弹出提示。
 - **硬件 ID (HWID) 绑定：** 通过获取 MAC 地址和 BIOS 序列号生成唯一的机器指纹，实现密钥的单机绑定。
@@ -112,7 +112,7 @@ MonitorService/ ├── main.cpp # 主入口，提供命令行交互和配置�
 
 ### 核心功能
 
-- **注册表存储：** 在 Windows 注册表 (`HKEY_CURRENT_USER\SOFTWARE\MyCompany\MonitorService`) 中安全存储配置信息和授权状态。
+- **注册表存储：** 在 Windows 注册表 (`HKEY_LOCAL_MACHINE\SOFTWARE\MyCompany\MonitorService`) 中安全存储配置信息和授权状态。
 - **日期防篡改：** 实时监控系统日期，防止用户通过将时间回拨来延长试用期。
 - **进程监控与冻结：** 持续检测目标软件是否运行。一旦到期或检测到篡改，立即冻结目标窗口并弹出提示。
 - **硬件 ID (HWID) 绑定：** 通过获取 MAC 地址和 BIOS 序列号生成唯一的机器指纹，实现密钥的单机绑定。
