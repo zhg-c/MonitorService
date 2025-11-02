@@ -1,75 +1,63 @@
-﻿// 修复宏冲突的关键行！
-#define NOMINMAX
+﻿#define NOMINMAX
 #include "HardwareID.h"
-#include "RegistryManager.h" // 包含注册表操作
 #include "MonitorCore.h"
 #include <iostream>
 #include <string>
-#include <limits>
 #include <locale>
+#include <limits>
 
 void ShowMenu()
 {
-	std::wcout << L"\n--- 授权助手 v1.0 ---" << std::endl;
-	std::wcout << L"1. 获取本机硬件ID (HWID)" << std::endl;
-	std::wcout << L"2. 输入并激活密钥" << std::endl;
-	std::wcout << L"3. 退出" << std::endl;
-	std::wcout << L"-----------------------" << std::endl;
-	std::wcout << L"请选择操作: ";
+    std::wcout << L"\n==== 授权助手 ====" << std::endl;
+    std::wcout << L"1. 显示本机 HWID" << std::endl;
+    std::wcout << L"2. 激活密钥" << std::endl;
+    std::wcout << L"3. 退出" << std::endl;
+    std::wcout << L"> ";
 }
 
-void Action_GetHwid()
+void Action_ShowHwid()
 {
-	std::wcout << L"\n--- 本机硬件ID ---" << std::endl;
-	// 调用 DLL 中的函数
-	std::wstring hwid = HardwareID::GenerateHardwareId();
-	std::wcout << L"请复制以下ID提供给客服获取密钥：" << std::endl;
-	std::wcout << hwid << std::endl;
-	std::wcout << L"-----------------------" << std::endl;
+    std::wstring hwid = HardwareID::GenerateHardwareId();
+    std::wcout << L"\n本机 HWID:" << std::endl;
+    std::wcout << hwid << L"\n\n请将此 HWID 提供给客服。" << std::endl;
 }
 
-void ActivateKey()
+void Action_Activate()
 {
-	MonitorCore core;
-	std::wstring key;
-	std::wcout << L"请输入您收到的密钥: ";
-	std::wcin >> key;
+    std::wstring key;
+    MonitorCore core;
 
-	// 1. 获取本地 HWID (必须在验证前获取)
-	std::wstring localHwid = HardwareID::GenerateHardwareId();
+    std::wcout << L"\n请输入密钥: ";
+    std::wcin >> key;
+    std::wcin.ignore(std::numeric_limits<std::streamsize>::max(), L'\n');
 
-	// 2. 调用新的 ValidateKey 接口
-	core.ValidateKey(key, localHwid);
+    std::wstring localHwid = HardwareID::GenerateHardwareId();
+
+    if (core.ValidateKey(key, localHwid))
+        std::wcout << L"\n  授权成功！" << std::endl;
+    else
+        std::wcout << L"\n  授权失败，请检查密钥。" << std::endl;
 }
 
 int wmain()
 {
-	// 确保宽字符流支持中文
-	std::locale::global(std::locale(""));
+    std::locale::global(std::locale(""));
 
-	int choice = 0;
-	while (choice != 3) {
-		ShowMenu();
-		if (!(std::wcin >> choice)) {
-			std::wcin.clear();
-			std::wcin.ignore(std::numeric_limits<std::streamsize>::max(), L'\n');
-			choice = 0;
-		}
+    while (true) {
+        int choice;
+        ShowMenu();
 
-		switch (choice) {
-		case 1:
-			Action_GetHwid();
-			break;
-		case 2:
-			ActivateKey();
-			break;
-		case 3:
-			break;
-		default:
-			std::wcout << L"无效选择。" << std::endl;
-			break;
-		}
-	}
+        if (!(std::wcin >> choice)) {
+            std::wcin.clear();
+            std::wcin.ignore(std::numeric_limits<std::streamsize>::max(), L'\n');
+            continue;
+        }
 
-	return 0;
+        switch (choice) {
+            case 1: Action_ShowHwid(); break;
+            case 2: Action_Activate(); break;
+            case 3: return 0;
+            default: std::wcout << L"无效选择。" << std::endl;
+        }
+    }
 }

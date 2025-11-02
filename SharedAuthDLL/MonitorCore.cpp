@@ -289,55 +289,47 @@ void MonitorCore::RunMonitorLoop()
 	}
 }
 
-// 假设我们的密钥格式是： HWID_HASH + "_" + NEW_EXPIRY_DATE + "_" + MAGIC_CODE
-// 例如： A1B2C3D4..._20261231_SAFE
-
 bool MonitorCore::ValidateKey(const std::wstring &key, const std::wstring &localHwid)
 {
-	// 1. 密钥分解
-	size_t pos1 = key.find(L"_");
-	size_t pos2 = key.find(L"_", pos1 + 1);
+    // KEY FORMAT:
+    // <PREFIX16>_<YYYYMMDD>_TEMP
+    // <PREFIX16>_<YYYYMMDD>_FINAL
 
-	if (pos1 == std::wstring::npos || pos2 == std::wstring::npos) {
-		std::wcout << L"[KEY] 密钥格式错误。" << std::endl;
-		return false;
-	}
+    size_t p1 = key.find(L'_');
+    size_t p2 = key.find(L'_', p1 + 1);
 
-	std::wstring receivedHwidHash = key.substr(0, pos1);
-	std::wstring newExpiryDateStr = key.substr(pos1 + 1, pos2 - pos1 - 1);
-	std::wstring magicCode = key.substr(pos2 + 1);
+    if (p1 == std::wstring::npos || p2 == std::wstring::npos)
+        return false;
 
-	// 2. 验证 HWID 绑定 (核心步骤)
-	// 密钥中的 HWID 必须匹配当前机器的 HWID
-	std::wstring expectedHwidHash = HardwareID::SHA256(localHwid);
+    std::wstring prefix = key.substr(0, p1);
+    std::wstring expiry = key.substr(p1 + 1, p2 - p1 - 1);
+    std::wstring mode   = key.substr(p2 + 1);
 
-	if (receivedHwidHash != expectedHwidHash.substr(0, receivedHwidHash.length())) {
-		std::wcout << L"[KEY] 密钥不匹配此计算机！硬件 ID 验证失败。" << std::endl;
-		return false;
-	}
+    // 本机 HWID（64 hex）
+    std::wstring fullHash = HardwareID::SHA256(localHwid);
 
-	// 3. 验证 MAGIC_CODE 和状态（永久/一次性）
-	DWORD newStatus = KeyStatus::Trial;
-	if (magicCode == L"FINAL") {
-		newStatus = KeyStatus::PermanentActive;
-	} else if (magicCode == L"TEMP") {
-		newStatus = KeyStatus::OneTimeKeyActive;
-	} else {
-		std::wcout << L"[KEY] 密钥校验码错误。" << std::endl;
-		return false;
-	}
+    // 检查前缀是否匹配
+    if (fullHash.substr(0, prefix.size()) != prefix)
+        return false;
 
-	// 4. 激活成功，更新注册表
-	if (newStatus == KeyStatus::PermanentActive) {
-		RegistryManager::WriteDword(L"KeyStatus", newStatus);
-		std::wcout << L"[KEY] 永久密钥激活成功！监控服务已停止。" << std::endl;
-	} else {
-		RegistryManager::WriteString(L"ExpiryDate", newExpiryDateStr);
-		RegistryManager::WriteDword(L"KeyStatus", newStatus);
-		std::wcout << L"[KEY] 一次性密钥激活成功！到期日延长至 " << newExpiryDateStr << std::endl;
-	}
+    // 检查日期
+    if (expiry.size() != 8)
+        return false;
 
-	return true;
+    int status = KeyStatus::Trial;
+
+    if (mode == L"FINAL")
+        status = KeyStatus::PermanentActive;
+    else if (mode == L"TEMP")
+        status = KeyStatus::OneTimeKeyActive;
+    else
+        return false;
+
+    // 写入注册表
+    RegistryManager::WriteString(L"ExpiryDate", expiry);
+    RegistryManager::WriteDword(L"KeyStatus", status);
+
+    return true;
 }
 
 void MonitorCore::StopMonitoring()
