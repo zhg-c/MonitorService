@@ -6,10 +6,78 @@
 #include <iostream>
 #include <windows.h>
 #include <tlhelp32.h> // for process enumeration
+#include <wtsapi32.h>
+#include <userenv.h>
+#pragma comment(lib, "Wtsapi32.lib")
+#pragma comment(lib, "Userenv.lib")
 
 // 模拟的密钥验证（实际应该更复杂）
 #define PERMANENT_KEY	   L"FINAL-SETTLEMENT-KEY-001"
 #define ONETIME_KEY_PREFIX L"TEMP-ACCESS-"
+
+bool LaunchAgentInUserSession(const std::wstring& targetProcess)
+{
+    DWORD sessionId = WTSGetActiveConsoleSessionId();
+
+    HANDLE userToken = NULL;
+    if (!WTSQueryUserToken(sessionId, &userToken))
+        return false;
+
+    HANDLE primaryToken = NULL;
+    if (!DuplicateTokenEx(userToken, TOKEN_ALL_ACCESS, NULL,
+        SecurityImpersonation, TokenPrimary, &primaryToken))
+    {
+        CloseHandle(userToken);
+        return false;
+    }
+
+    LPVOID envBlock = NULL;
+    CreateEnvironmentBlock(&envBlock, primaryToken, FALSE);
+
+    STARTUPINFOW si = { sizeof(si) };
+    si.lpDesktop = (LPWSTR)L"winsta0\\default";
+    PROCESS_INFORMATION pi{};
+
+    // ✅ 1. 获取服务自身目录
+    wchar_t servicePath[MAX_PATH];
+    GetModuleFileNameW(NULL, servicePath, MAX_PATH);
+
+    std::wstring dir = servicePath;
+    size_t pos = dir.find_last_of(L"\\/");
+    if (pos != std::wstring::npos)
+        dir = dir.substr(0, pos + 1);
+
+    // ✅ 2. 组合 Agent 路径
+    std::wstring cmdString = dir + L"MonitorAgent.exe ";
+    cmdString += targetProcess;
+
+    std::wstring cmdLine = cmdString;
+
+    BOOL ok = CreateProcessAsUserW(
+        primaryToken,
+        NULL,
+        &cmdLine[0],
+        NULL,
+        NULL,
+        FALSE,
+        CREATE_UNICODE_ENVIRONMENT,
+        envBlock,
+        dir.c_str(),     // ✅ 设置工作目录为服务所在目录
+        &si,
+        &pi
+    );
+
+    if (envBlock) DestroyEnvironmentBlock(envBlock);
+    CloseHandle(primaryToken);
+    CloseHandle(userToken);
+
+    if (!ok)
+        return false;
+
+    CloseHandle(pi.hThread);
+    CloseHandle(pi.hProcess);
+    return true;
+}
 
 /**
  * @brief 通过进程名称查找进程ID (PID)。
@@ -25,13 +93,13 @@ DWORD GetProcessIdByName(const std::wstring &processName)
 	HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 	if (hSnapshot == INVALID_HANDLE_VALUE) {
 		return 0;
-	}
+	} 
 
 	// 遍历进程列表
 	if (Process32First(hSnapshot, &pe32)) {
 		do {
 			// 注意: pe32.szExeFile 是 TCHAR 数组，可能需要宽字符比较
-			if (processName.compare(pe32.szExeFile) == 0) {
+			if (_wcsicmp(processName.c_str(), pe32.szExeFile) == 0) {
 				CloseHandle(hSnapshot);
 				return pe32.th32ProcessID;
 			}
@@ -155,35 +223,7 @@ HWND GetTargetWindow(DWORD processID)
 
 void MonitorCore::FreezeWindowAndPrompt(const std::wstring &targetName)
 {
-	// 1. 查找目标进程的 PID
-	DWORD pid = GetProcessIdByName(targetName);
-	if (pid == 0) {
-		// 目标程序未运行，安全返回
-		return;
-	}
-
-	// 2. 枚举窗口以找到主 HWND
-	EnumWindowsCallbackData data;
-	data.targetPid = pid;
-
-	// 开始枚举所有顶级窗口，并在回调函数中进行匹配
-	EnumWindows(EnumWindowsProc, reinterpret_cast<LPARAM>(&data));
-
-	HWND hWnd = data.targetHwnd;
-
-	if (hWnd != NULL) {
-		// 2. 冻结窗口
-		EnableWindow(hWnd, FALSE);
-		std::wcout << L"[FREEZE] 窗口已冻结。" << std::endl;
-
-		// 3. 给出提示框
-		MessageBox(hWnd,
-			L"本软件试用期已到或检测到系统时间异常。\n请联系客服获取密钥。",
-			L"授权警告",
-			MB_ICONSTOP | MB_OK);
-	} else {
-		std::wcout << L"[FREEZE] 警告：未能找到目标软件窗口句柄。" << std::endl;
-	}
+	LaunchAgentInUserSession(targetName);
 }
 
 // --------------------------- 进程监控 ---------------------------
