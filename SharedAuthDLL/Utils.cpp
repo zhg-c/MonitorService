@@ -1,8 +1,12 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "Utils.h"
 #include <Windows.h>
 #include <sstream>
 #include <iomanip>
+#include <iostream>
+#include <string>
+#include <algorithm>
+#include <vector>
 
 namespace Utils {
 
@@ -34,4 +38,75 @@ long StringDateToLong(const std::wstring &dateStr)
 	}
 }
 
+// 简单的 XOR 混淆密钥 (使用 wchar_t 类型)
+const wchar_t XOR_KEY = 0xAAAA;
+
+// ----------------------------------------------------------------------
+// 1. 混淆 (XOR) - 输入输出都是 std::wstring
+// ----------------------------------------------------------------------
+
+std::wstring Obfuscate(const std::wstring &data)
+{
+	std::wstring obscured_data = data;
+	for (wchar_t &c : obscured_data) {
+		c ^= XOR_KEY;
+	}
+	return obscured_data;
+}
+
+// ----------------------------------------------------------------------
+// 2. 编码 (wchar_t Bytes to Hex String)
+// ----------------------------------------------------------------------
+// 将 wchar_t 数组的字节表示转换为字母数字的 Hex 字符串
+// 假设 wchar_t 是 2 字节 (Windows/MSVC 默认)
+std::wstring WcharBytesToHexString(const std::wstring &wbytes)
+{
+	// 将 wstring 视为 byte 数组
+	const unsigned char *bytes = reinterpret_cast<const unsigned char *>(wbytes.c_str());
+	size_t byte_length = wbytes.length() * sizeof(wchar_t);
+
+	std::wstringstream ss;
+	ss << std::hex << std::uppercase;
+
+	for (size_t i = 0; i < byte_length; ++i) {
+		ss << std::setw(2) << std::setfill(L'0') << (int)bytes[i];
+	}
+	return ss.str();
+}
+
+// ----------------------------------------------------------------------
+// 3. 解码 (Hex String to wchar_t Bytes)
+// ----------------------------------------------------------------------
+
+std::wstring HexStringToWcharBytes(const std::wstring &hex)
+{
+	if (hex.length() % (sizeof(wchar_t) * 2) != 0) {
+		// 确保 Hex 字符串长度是 wchar_t 字节数的两倍的整数倍 (例如 4 的倍数)
+		return L"";
+	}
+
+	std::vector<unsigned char> raw_bytes;
+	for (size_t i = 0; i < hex.length(); i += 2) {
+		std::wstring byteString = hex.substr(i, 2);
+		// 使用 wcstoul 将宽字符 Hex 转换为数值
+		unsigned char byte = (unsigned char)wcstoul(byteString.c_str(), nullptr, 16);
+		raw_bytes.push_back(byte);
+	}
+
+	// 将 byte 数组重新解释为 wstring
+	const wchar_t *wchars = reinterpret_cast<const wchar_t *>(raw_bytes.data());
+	size_t wchars_length = raw_bytes.size() / sizeof(wchar_t);
+
+	return std::wstring(wchars, wchars_length);
+}
+
+std::wstring Cipher(const std::wstring &str)
+{
+	return WcharBytesToHexString(Obfuscate(str));
+}
+
+std::wstring Decipher(const std::wstring &str)
+{
+	return Obfuscate(HexStringToWcharBytes(str));
+}
 } // namespace Utils

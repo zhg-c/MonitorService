@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36623.8 d17.14
+VisualStudioVersion = 17.14.36623.8
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MonitorService", "MonitorService\MonitorService.vcxproj", "{73017F00-4C2B-402E-817F-D5C4FF45B321}"
 EndProject
@@ -14,6 +14,12 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MonitorConfig", "MonitorConfig\MonitorConfig.vcxproj", "{CD86E17C-404A-4844-AB7F-77727DCB3509}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MonitorAgent", "MonitorAgent\MonitorAgent.vcxproj", "{AEA08CF3-785E-4F4B-94F8-48EBB67F5534}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "解决方案项", "解决方案项", "{9FA3D6BD-1EC1-3BA5-80CB-CE02773A58D5}"
+	ProjectSection(SolutionItems) = preProject
+		ConfigToolInstaller.iss = ConfigToolInstaller.iss
+		MonitorServiceInstaller.iss = MonitorServiceInstaller.iss
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

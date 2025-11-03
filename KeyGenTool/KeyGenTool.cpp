@@ -98,7 +98,7 @@ void GenerateKey(const std::wstring &localHwid)
 	// --------- 3) 生成密钥 ----------
 	std::wstring finalKey =
 		keyPrefix + L"_" + newExpiryDate + L"_" + magicCode;
-
+	finalKey = Utils::Cipher(finalKey);
 	// --------- 4) 输出 ----------
 	std::wcout << L"\n==============================================" << std::endl;
 	std::wcout << L"   生成的授权密钥：" << std::endl;

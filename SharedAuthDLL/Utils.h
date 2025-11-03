@@ -9,4 +9,8 @@ SHAREDAUTHDLL_API std::wstring GetCurrentDateString();
 
 // 将 YYYYMMDD 格式的日期字符串转换为数字进行比较
 SHAREDAUTHDLL_API long StringDateToLong(const std::wstring &dateStr);
+// 将字符串转换为密文
+SHAREDAUTHDLL_API std::wstring Cipher(const std::wstring &str);
+// 将密文还原
+SHAREDAUTHDLL_API std::wstring Decipher(const std::wstring &str);
 }

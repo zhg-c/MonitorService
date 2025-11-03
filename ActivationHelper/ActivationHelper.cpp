@@ -1,6 +1,7 @@
 ﻿#define NOMINMAX
 #include "HardwareID.h"
 #include "MonitorCore.h"
+#include "Utils.h"
 #include <iostream>
 #include <string>
 #include <locale>
@@ -32,7 +33,7 @@ void Action_Activate()
     std::wcin.ignore(std::numeric_limits<std::streamsize>::max(), L'\n');
 
     std::wstring localHwid = HardwareID::GenerateHardwareId();
-
+	key = Utils::Decipher(key);
     if (core.ValidateKey(key, localHwid))
         std::wcout << L"\n  授权成功！" << std::endl;
     else
